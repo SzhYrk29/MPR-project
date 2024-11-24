@@ -1,22 +1,28 @@
 package pl.eu.pjatk.Spring_Boot.service;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletResponse;
 import pl.eu.pjatk.Spring_Boot.exception.CarNotFoundException;
 import pl.eu.pjatk.Spring_Boot.exception.EmptyInputException;
+import pl.eu.pjatk.Spring_Boot.exception.InvalidInputException;
 import pl.eu.pjatk.Spring_Boot.model.Car;
 import pl.eu.pjatk.Spring_Boot.repository.CarRepository;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class CarServiceTest {
 
@@ -35,20 +41,20 @@ class CarServiceTest {
     }
 
     @Test
-    void getAllCars() {
+    void shouldReturnAListOfAllCars() {
         underTest.getCars();
         verify(carRepository).findAll();
     }
 
     @Test
-    void addCar() {
+    void shouldAddCarToTheRepository() {
         Car car = new Car("Toyota", "Blue");
         underTest.addCar(car);
         verify(carRepository).save(car);
     }
 
     @Test
-    void addCarButInAFancyWay() {
+    void shouldCaptureCarAndAddItToTheRepository() {
         Car car = new Car("Toyota", "Blue");
 
         Mockito.when(stringUtilsService.toUpperCase("Toyota")).thenReturn("TOYOTA");
@@ -65,13 +71,43 @@ class CarServiceTest {
     }
 
     @Test
-    void cannotAddCarBecauseOfAnEmptyInput() {
+    void shouldThrowEmptyInputExceptionBecauseOfAnEmptyInputWhileTryingToAddACar() {
         Car car = new Car("", "");
         assertThrows(EmptyInputException.class, () -> underTest.addCar(car));
     }
 
     @Test
-    void getCarByBrand() {
+    void shouldNotAddCarWhenBrandIsEmpty() {
+        Car car = new Car("", "Midnight blue");
+        assertThrows(EmptyInputException.class, () -> underTest.addCar(car));
+    }
+
+    @Test
+    void shouldNotAddCarWhenColorIsEmpty() {
+        Car car = new Car("BMW", "");
+        assertThrows(EmptyInputException.class, () -> underTest.addCar(car));
+    }
+
+    @Test
+    void shouldNotAddCarWhenBrandIsNull() {
+        Car car = new Car(null, "Midnight blue");
+        assertThrows(EmptyInputException.class, () -> underTest.addCar(car));
+    }
+
+    @Test
+    void shouldNotAddCarWhenColorIsNull() {
+        Car car = new Car("BMW", null);
+        assertThrows(EmptyInputException.class, () -> underTest.addCar(car));
+    }
+
+    @Test
+    void shouldNotAddCarWhenBrandAndColorAreNull() {
+        Car car = new Car(null, null);
+        assertThrows(EmptyInputException.class, () -> underTest.addCar(car));
+    }
+
+    @Test
+    void shouldReturnAListOfCarsSortedByBrand() {
         Car car1 = new Car("TOYOTA", "BLUE");
         Car car2 = new Car("TOYOTA", "WHITE");
         String brand = "TOYOTA";
@@ -88,13 +124,13 @@ class CarServiceTest {
     }
 
     @Test
-    void cannotGetCarByBrandBecauseBrandDoesNotExist() {
+    void shouldThrowCarNotFoundExceptionBecauseSuchBrandDoesNotExist() {
         String brand = "TOYOTA";
         assertThrows(CarNotFoundException.class, () -> underTest.getCarByBrand(brand));
     }
 
     @Test
-    void getCarByColor() {
+    void shouldReturnAListOfCarsSortedByColor() {
         Car car1 = new Car("TOYOTA", "BLUE");
         Car car2 = new Car("TOYOTA", "WHITE");
         String color1 = "BLUE";
@@ -114,13 +150,13 @@ class CarServiceTest {
     }
 
     @Test
-    void cannotGetCarByColorBecauseColorDoesNotExist() {
+    void shouldThrowCarNotFoundExceptionBecauseSuchColorDoesNotExist() {
         String color = "PINK";
         assertThrows(CarNotFoundException.class, () -> underTest.getCarByColor(color));
     }
 
     @Test
-    void getCarById() {
+    void shouldReturnACarById() {
         Car car = new Car("TOYOTA", "BLUE");
         Long carId = 1L;
         Mockito.when(carRepository.findById(carId)).thenReturn(Optional.of(car));
@@ -136,14 +172,21 @@ class CarServiceTest {
     }
 
     @Test
-    void cannotGetCarByIdBecauseIdWasNotFound() {
+    void shouldThrowCarNotFoundExceptionBecauseCarWithSuchIdDoesNotExistWhileTryingToGetACar() {
         Long carId = 1L;
         Mockito.when(carRepository.findById(carId)).thenReturn(Optional.empty());
         assertThrows(CarNotFoundException.class, () -> underTest.getCar(carId));
     }
 
     @Test
-    void deleteCarById() {
+    void shouldThrowInvalidInputExceptionForNegativeOrZeroIdWhileTryingToGetACar() {
+        Long carId = -1L;
+        Mockito.when(carRepository.findById(carId)).thenReturn(Optional.empty());
+        assertThrows(InvalidInputException.class, () -> underTest.getCar(carId));
+    }
+
+    @Test
+    void shouldDeleteCarById() {
         Long carId = 1L;
         Mockito.when(carRepository.existsById(carId)).thenReturn(true);
         underTest.deleteCar(carId);
@@ -151,14 +194,14 @@ class CarServiceTest {
     }
 
     @Test
-    void cannotDeleteCarByIdBecauseIdWasNotFound() {
+    void shouldThrowCarNotFoundExceptionBecauseCarWithSuchIdDoesNotExistWhileTryingToDeleteACar() {
         Long carId = 1L;
         Mockito.when(carRepository.existsById(carId)).thenReturn(false);
         assertThrows(CarNotFoundException.class, () -> underTest.deleteCar(carId));
     }
 
     @Test
-    void updateCarById() {
+    void shouldUpdateCarById() {
         Long carId = 1L;
         Car existingCar = new Car("Toyota", "blue");
         Car updatedCar = new Car("Ford", "green");
@@ -178,7 +221,7 @@ class CarServiceTest {
     }
 
     @Test
-    void cannotUpdateCarBecauseIdWasNotFound() {
+    void shouldThrowCarNotFoundExceptionBecauseCarWithSuchIdDoesNotExistWhileTryingToUpdateACar() {
         Car car = new Car();
         Long carId = 1L;
         Mockito.when(carRepository.existsById(carId)).thenReturn(false);
@@ -186,7 +229,7 @@ class CarServiceTest {
     }
 
     @Test
-    void cannotUpdateCarBecauseOfAnEmptyInput() {
+    void shouldThrowEmptyInputExceptionBecauseOfAnEmptyInputWhileTryingToUpdateACar() {
         Car existingCar = new Car("Toyota", "blue");
         Car updatedCar = new Car("", "");
         Long carId = 1L;
@@ -194,4 +237,145 @@ class CarServiceTest {
         Mockito.when(carRepository.findById(carId)).thenReturn(Optional.of(existingCar));
         assertThrows(EmptyInputException.class, () -> underTest.updateCar(carId, updatedCar));
     }
+
+    @Test
+    void shouldNotUpdateCarWhenBrandIsEmpty() {
+        Car existingCar = new Car("Tesla", "Midnight blue");
+        Car updatedCar = new Car("", "Black");
+        Long carId = 1L;
+        Mockito.when(carRepository.existsById(carId)).thenReturn(true);
+        Mockito.when(carRepository.findById(carId)).thenReturn(Optional.of(existingCar));
+        assertThrows(EmptyInputException.class, () -> underTest.updateCar(carId, updatedCar));
+    }
+
+    @Test
+    void shouldNotUpdateCarWhenColorIsEmpty() {
+        Car existingCar = new Car("Tesla", "Midnight blue");
+        Car updatedCar = new Car("BMW", "");
+        Long carId = 1L;
+        Mockito.when(carRepository.existsById(carId)).thenReturn(true);
+        Mockito.when(carRepository.findById(carId)).thenReturn(Optional.of(existingCar));
+        assertThrows(EmptyInputException.class, () -> underTest.updateCar(carId, updatedCar));
+    }
+
+    @Test
+    void shouldNotUpdateCarWhenBrandIsNull() {
+        Car existingCar = new Car("Tesla", "Midnight blue");
+        Car updatedCar = new Car(null, "Black");
+        Long carId = 1L;
+        Mockito.when(carRepository.existsById(carId)).thenReturn(true);
+        Mockito.when(carRepository.findById(carId)).thenReturn(Optional.of(existingCar));
+        assertThrows(EmptyInputException.class, () -> underTest.updateCar(carId, updatedCar));
+    }
+
+    @Test
+    void shouldNotUpdateCarWhenColorIsNull() {
+        Car existingCar = new Car("Tesla", "Midnight blue");
+        Car updatedCar = new Car("BMW", null);
+        Long carId = 1L;
+        Mockito.when(carRepository.existsById(carId)).thenReturn(true);
+        Mockito.when(carRepository.findById(carId)).thenReturn(Optional.of(existingCar));
+        assertThrows(EmptyInputException.class, () -> underTest.updateCar(carId, updatedCar));
+    }
+
+    @Test
+    void shouldNotUpdateCarWhenColorAndBrandAreNull() {
+        Car existingCar = new Car("Tesla", "Midnight blue");
+        Car updatedCar = new Car(null, null);
+        Long carId = 1L;
+        Mockito.when(carRepository.existsById(carId)).thenReturn(true);
+        Mockito.when(carRepository.findById(carId)).thenReturn(Optional.of(existingCar));
+        assertThrows(EmptyInputException.class, () -> underTest.updateCar(carId, updatedCar));
+    }
+
+    @Test
+    void shouldFetchCorrectCarFromRepository() throws IOException {
+        Car car = new Car("Tesla", "Black");
+        Long carId = 1L;
+
+        when(carRepository.findById(carId)).thenReturn(Optional.of(car));
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        underTest.getPdf(carId, response);
+
+        ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(carRepository, times(1)).findById(idCaptor.capture());
+
+        Long capturedId = idCaptor.getValue();
+        assertEquals(carId, capturedId);
+    }
+
+    @Test
+    void shouldThrowInvalidInputExceptionForNegativeOrZeroIdWhileTryingToGetAPdf() {
+        Long carId = -1L;
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        Mockito.when(carRepository.existsById(carId)).thenReturn(false);
+        assertThrows(InvalidInputException.class, () -> underTest.getPdf(carId, response));
+    }
+
+    @Test
+    void shouldThrowCarNotFoundExceptionForMissingCar() {
+        Long carId = 1L;
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        Mockito.when(carRepository.existsById(carId)).thenReturn(false);
+        assertThrows(CarNotFoundException.class, () -> underTest.getPdf(carId, response));
+    }
+
+    @Test
+    void shouldSetResponseHeaders() throws IOException {
+        Long carId = 1L;
+        Car car = new Car("BMW", "Black");
+        when(carRepository.findById(carId)).thenReturn(Optional.of(car));
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        underTest.getPdf(carId, response);
+
+        assertEquals("application/pdf", response.getContentType());
+        assertTrue(response.getHeader("Content-Disposition").contains("cars_" + carId + ".pdf"));
+    }
+
+    @Test
+    void shouldInitializeCarsWhenRepositoryIsEmpty() {
+        when(carRepository.count()).thenReturn(0L);
+
+        underTest.init();
+
+        verify(carRepository).save(argThat(car -> car.getBrand().equals("Tesla") && car.getColor().equals("white")));
+        verify(carRepository).save(argThat(car -> car.getBrand().equals("Lamborghini") && car.getColor().equals("red")));
+        verify(carRepository).save(argThat(car -> car.getBrand().equals("BMW") && car.getColor().equals("black")));
+        verify(carRepository).save(argThat(car -> car.getBrand().equals("Porsche") && car.getColor().equals("purple")));
+        verify(carRepository).save(argThat(car -> car.getBrand().equals("Audi") && car.getColor().equals("midnight blue")));
+    }
+
+    @Test
+    void shouldNotInitializeCarsWhenRepositoryIsEmpty() {
+        when(carRepository.count()).thenReturn(5L);
+
+        underTest.init();
+
+        verify(carRepository, never()).save(any(Car.class));
+    }
+
+//    @Test
+//    void shouldGenerateCorrectPdfContent() throws IOException {
+//        Long carId = 1L;
+//        Car car = new Car("BMW", "Black");
+//        when(carRepository.findById(carId)).thenReturn(Optional.of(car));
+//
+//        MockHttpServletResponse response = new MockHttpServletResponse();
+//        underTest.getPdf(carId, response);
+//
+//        try (PDDocument document = PDDocument.load(response.getContentAsByteArray())) {
+//            PDFTextStripper pdfStripper = new PDFTextStripper();
+//            String pdfContent = pdfStripper.getText(document);
+//
+//            assertTrue(pdfContent.contains("Info about car with id " + carId));
+//            assertTrue(pdfContent.contains("Car ID   |   Brand   |   Color   |   Identifier"));
+//            assertTrue(pdfContent.contains("1   |   BMW   |   Black   |   null"));
+//        }
+//    }
 }

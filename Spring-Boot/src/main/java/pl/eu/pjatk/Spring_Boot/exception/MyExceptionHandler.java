@@ -23,4 +23,9 @@ public class MyExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleEmptyInput(RuntimeException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value={InvalidInputException.class})
+    public ResponseEntity<Object> handleInvalidInput(RuntimeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
 }

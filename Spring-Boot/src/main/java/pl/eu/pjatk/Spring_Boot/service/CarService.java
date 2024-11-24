@@ -7,9 +7,11 @@ import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import pl.eu.pjatk.Spring_Boot.exception.CarNotFoundException;
 import pl.eu.pjatk.Spring_Boot.exception.EmptyInputException;
+import pl.eu.pjatk.Spring_Boot.exception.InvalidInputException;
 import pl.eu.pjatk.Spring_Boot.model.Car;
 import pl.eu.pjatk.Spring_Boot.repository.CarRepository;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -23,15 +25,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class CarService {
-    private final CarRepository carRepository;
     private CarRepository repository;
     private StringUtilsService stringUtilsService;
 
     @Autowired
-    public CarService(CarRepository repository, StringUtilsService stringUtilsService, CarRepository carRepository) {
+    public CarService(CarRepository repository, StringUtilsService stringUtilsService) {
         this.repository = repository;
         this.stringUtilsService = stringUtilsService;
-        this.carRepository = carRepository;
     }
 
     @PostConstruct
@@ -64,9 +64,12 @@ public class CarService {
 
     public Car getCar(Long id) {
         Optional<Car> optionalCar = this.repository.findById(id);
-        if (optionalCar.isEmpty() || id <= 0) {
+
+        if (id <= 0)
+            throw new InvalidInputException();
+        else if (optionalCar.isEmpty())
             throw new CarNotFoundException();
-        } else {
+        else {
             Car car = optionalCar.get();
             car.setBrand(this.stringUtilsService.toLowerCaseExceptFirstLetter(car.getBrand()));
             car.setColor(this.stringUtilsService.toLowerCaseExceptFirstLetter(car.getColor()));
@@ -75,54 +78,67 @@ public class CarService {
     }
 
     public void addCar(Car car) {
+        if (car.getBrand() == null || car.getColor() == null || car.getBrand().isEmpty() || car.getColor().isEmpty())
+            throw new EmptyInputException();
+
         car.setBrand(this.stringUtilsService.toUpperCase(car.getBrand()));
         car.setColor(this.stringUtilsService.toUpperCase(car.getColor()));
-
-        if (car.getBrand().isEmpty() || car.getColor().isEmpty()) {
-            throw new EmptyInputException();
-        }
 
         this.repository.save(car);
     }
 
     public void deleteCar(Long id) {
         boolean exists = this.repository.existsById(id);
-        if (!exists) {
+        if (!exists)
             throw new CarNotFoundException();
-        }
+
         this.repository.deleteById(id);
     }
 
     public void updateCar(Long id, Car car) {
         Car existingCar = this.repository.findById(id).orElseThrow(CarNotFoundException::new);
-        existingCar.setBrand(this.stringUtilsService.toUpperCase(car.getBrand()));
-        existingCar.setColor(this.stringUtilsService.toUpperCase(car.getColor()));
 
-        if (existingCar.getBrand().isEmpty() || car.getColor().isEmpty()) {
+        if (car.getBrand() == null || car.getBrand().isEmpty() || car.getColor() == null || car.getColor().isEmpty()) {
             throw new EmptyInputException();
         }
+
+        existingCar.setBrand(this.stringUtilsService.toUpperCase(car.getBrand()));
+        existingCar.setColor(this.stringUtilsService.toUpperCase(car.getColor()));
 
         existingCar.setIdentifier();
         this.repository.save(existingCar);
     }
 
+
     public void getPdf(Long id, HttpServletResponse response) throws IOException {
-        Optional<Car> cars = carRepository.findById(id);
+        if (id <= 0)
+            throw new InvalidInputException();
 
-         response.setContentType("application/pdf");
-         response.setHeader("Content-Disposition", "attachment; filename=cars.pdf" + id + ".pdf");
+        Optional<Car> carOptional = repository.findById(id);
 
-         PDDocument document = new PDDocument();
+        if (carOptional.isEmpty())
+            throw new CarNotFoundException();
 
-         PDPage page = new PDPage();
-         document.addPage(page);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=cars_" + id + ".pdf");
 
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+
+        setupContentStream(document, page, carOptional.get());
+
+        document.save(response.getOutputStream());
+        document.close();
+    }
+
+    private void setupContentStream(PDDocument document, PDPage page, Car car) throws IOException {
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
         contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.TIMES_ROMAN), 16);
         contentStream.beginText();
         contentStream.newLineAtOffset(100, 750);
-        contentStream.showText("Info about car with id " + cars.get().getId());
+        contentStream.showText("Info about car with id " + car.getId());
         contentStream.endText();
 
         contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.TIMES_ROMAN), 12);
@@ -130,27 +146,15 @@ public class CarService {
         contentStream.newLineAtOffset(100, 700);
         contentStream.showText("Car ID   |   Brand   |   Color   |   Identifier");
         contentStream.newLineAtOffset(0, -15);
-
-        cars.ifPresent(carList -> {
-            try {
-                        contentStream.showText(
-                                cars.get().getId() + "   |   " +
-                                        cars.get().getBrand() + "   |   " +
-                                        cars.get().getColor() + "   |   " +
-                                        cars.get().getIdentifier()
-                        );
-                        contentStream.newLineAtOffset(0, -15);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-
+        contentStream.showText(
+                        car.getId() + "   |   " +
+                        car.getBrand() + "   |   " +
+                        car.getColor() + "   |   " +
+                        car.getIdentifier()
+        );
         contentStream.endText();
-        contentStream.close();
 
-        document.save(response.getOutputStream());
-        document.close();
+        contentStream.close();
     }
 
     private List<Car> getSortedCars(List<Car> cars) {
