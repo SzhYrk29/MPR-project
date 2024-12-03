@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Display all cars</title>
+    <title>Display car's info</title>
 </head>
 <style>
     th, td {
@@ -12,19 +12,23 @@
 </style>
 <body>
 
-<h1>Display all cars in database</h1>
-<table>
+<h1>Display car's info</h1>
+<p>Here you can find all the information about this car</p>
+
+<table th:if="${car != null}">
     <tr>
         <th>ID</th>
         <th>Brand</th>
         <th>Color</th>
     </tr>
-    <tr th:each="car : ${carList}">
+    <tr>
         <td th:text="${car.id}"></td>
         <td th:text="${car.brand}"></td>
         <td th:text="${car.color}"></td>
     </tr>
 </table>
+
+<p th:if="${car == null}">No car available.</p>
 
 </body>
 </html>

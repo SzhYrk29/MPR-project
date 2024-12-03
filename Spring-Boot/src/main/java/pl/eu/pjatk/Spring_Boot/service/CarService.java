@@ -3,11 +3,9 @@ package pl.eu.pjatk.Spring_Boot.service;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import pl.eu.pjatk.Spring_Boot.exception.CarNotFoundException;
 import pl.eu.pjatk.Spring_Boot.exception.EmptyInputException;
@@ -18,7 +16,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,12 +44,20 @@ public class CarService {
 
     public List<Car> getCarByBrand (String brand) {
         List<Car> cars = this.repository.findByBrand(brand);
+        for (Car car : cars) {
+            car.setBrand(this.stringUtilsService.toLowerCaseExceptFirstLetter(car.getBrand()));
+            car.setColor(this.stringUtilsService.toLowerCaseExceptFirstLetter(car.getColor()));
+        }
         throwCarNotFoundException(cars);
         return getSortedCars(cars);
     }
 
     public List<Car> getCarByColor (String color) {
         List<Car> cars = this.repository.findByColor(color);
+        for (Car car : cars) {
+            car.setBrand(this.stringUtilsService.toLowerCaseExceptFirstLetter(car.getBrand()));
+            car.setColor(this.stringUtilsService.toLowerCaseExceptFirstLetter(car.getColor()));
+        }
         throwCarNotFoundException(cars);
         return getSortedCars(cars);
     }
