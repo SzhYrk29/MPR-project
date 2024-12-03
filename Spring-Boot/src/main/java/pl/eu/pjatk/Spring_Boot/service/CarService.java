@@ -34,7 +34,7 @@ public class CarService {
     @PostConstruct
     public void init() {
         if (this.repository.count() == 0) {
-            this.repository.save(new Car("Tesla", "white"));
+            this.repository.save(new Car("Tesla", "white", "uploads/ford_black.jpg"));
             this.repository.save(new Car("Lamborghini", "red"));
             this.repository.save(new Car("BMW", "black"));
             this.repository.save(new Car("Porsche", "purple"));

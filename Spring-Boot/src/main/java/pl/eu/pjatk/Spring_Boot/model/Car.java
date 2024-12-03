@@ -1,9 +1,6 @@
 package pl.eu.pjatk.Spring_Boot.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Car {
@@ -13,11 +10,19 @@ public class Car {
     private String brand;
     private String color;
     private int identifier;
+    private String pictureUrl;
 
     public Car(String brand, String color) {
         this.brand = brand;
         this.color = color;
         this.setIdentifier();
+    }
+
+    public Car(String brand, String color, String pictureUrl) {
+        this.brand = brand;
+        this.color = color;
+        this.setIdentifier();
+        this.pictureUrl = pictureUrl;
     }
 
     public Car() {}
@@ -58,5 +63,13 @@ public class Car {
         for (int i = 0; i < brandAndColor.length(); i++) {
             this.identifier += brandAndColor.charAt(i);
         }
+    }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 }

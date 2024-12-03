@@ -6,10 +6,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pl.eu.pjatk.Spring_Boot.model.Car;
 import pl.eu.pjatk.Spring_Boot.service.CarService;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class MyViewController {
@@ -47,7 +51,27 @@ public class MyViewController {
     }
 
     @PostMapping("addForm")
-    public String submitAddForm(@ModelAttribute Car car) {
+    public String submitAddForm(@RequestParam("brand") String brand,
+                                @RequestParam("color") String color,
+                                @RequestParam("picture") MultipartFile picture) throws IOException {
+        Path uploadDirectory = Paths.get("D:", "PJATK", "3 semestr", "MPR-project", "Spring-Boot", "uploads");
+
+        File uploadDir = uploadDirectory.toFile();
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        String fileName = picture.getOriginalFilename();
+        String filePath = uploadDirectory.resolve(fileName).toString();
+
+        File file = new File(filePath);
+        picture.transferTo(file);
+
+        Car car = new Car();
+        car.setBrand(brand);
+        car.setColor(color);
+        car.setPictureUrl(filePath);
+
         this.carService.addCar(car);
         return "redirect:/view/all";
     }

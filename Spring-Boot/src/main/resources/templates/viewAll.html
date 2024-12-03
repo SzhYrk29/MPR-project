@@ -12,17 +12,23 @@
 </style>
 <body>
 
-<h1>Display all cars in database</h1>
+<h1>Display all cars in the database</h1>
 <table>
     <tr>
         <th>ID</th>
         <th>Brand</th>
         <th>Color</th>
+        <th>Picture</th>
     </tr>
     <tr th:each="car : ${carList}">
         <td th:text="${car.id}"></td>
         <td th:text="${car.brand}"></td>
         <td th:text="${car.color}"></td>
+        <td>
+            <span th:if="${car.pictureUrl == null}">No picture</span>
+            <img th:if="${car.pictureUrl != null}" th:src="@{'/uploads/' + ${car.pictureUrl}}" alt="Car Image" width="100">
+        </td>
+
     </tr>
 </table>
 

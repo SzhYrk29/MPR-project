@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Add new car</title>
+  <meta charset="UTF-8">
+  <title>Add new car</title>
 </head>
 <body>
 <h1>Add new car</h1>
-<p>Here you can add a new car to database</p>
+<p>Here you can add a new car to the database</p>
 
-<form action="#" th:action="@{/addForm}" th:field="${car}" method="post">
+<form action="#" th:action="@{/addForm}" method="post" enctype="multipart/form-data">
   <table>
     <tr>
       <td><input type="text" placeholder="Brand" th:field="${car.brand}"/></td>
     </tr>
     <tr>
       <td><input type="text" placeholder="Color" th:field="${car.color}"/></td>
+    </tr>
+    <tr>
+      <td><input type="file" name="picture"/></td>
     </tr>
     <tr>
       <td><input type="submit" value="Submit"/></td>
