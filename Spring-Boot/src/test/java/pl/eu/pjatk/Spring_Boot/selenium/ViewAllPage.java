@@ -26,12 +26,30 @@ public class ViewAllPage {
 //        return this.header.isDisplayed();
 //    }
 
-    public boolean isCarInTable(String brand, String color) {
+    public boolean isCarWithBrandAndColorInTable(String brand, String color) {
         return driver.findElements(By.xpath("//table//tr[td]")).stream()
                 .anyMatch(row -> {
                     WebElement brandCell = row.findElement(By.xpath("./td[2]"));
                     WebElement colorCell = row.findElement(By.xpath("./td[3]"));
                     return brandCell.getText().equals(brand) && colorCell.getText().equals(color);
+                });
+    }
+
+    public boolean isCarInTable(String id, String brand, String color) {
+        return driver.findElements(By.xpath("//table//tr[td]")).stream()
+                .anyMatch(row -> {
+                    WebElement idCell = row.findElement(By.xpath("./td[1]"));
+                    WebElement brandCell = row.findElement(By.xpath("./td[2]"));
+                    WebElement colorCell = row.findElement(By.xpath("./td[3]"));
+                    return idCell.getText().equals(id) && brandCell.getText().equals(brand) && colorCell.getText().equals(color);
+                });
+    }
+
+    public boolean isCanWithIdInTable(String id) {
+        return driver.findElements(By.xpath("//table//tr[td]")).stream()
+                .anyMatch(row -> {
+                    WebElement idCell = row.findElement(By.xpath("./td[1]"));
+                    return idCell.getText().equals(id);
                 });
     }
 }

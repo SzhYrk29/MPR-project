@@ -42,7 +42,7 @@ public class AddFormPage {
         return new ViewAllPage(this.driver);
     }
 
-    public boolean isSubmitButtonVisible() {
-        return this.submitButton.isDisplayed();
-    }
+//    public boolean isSubmitButtonVisible() {
+//        return this.submitButton.isDisplayed();
+//    }
 }

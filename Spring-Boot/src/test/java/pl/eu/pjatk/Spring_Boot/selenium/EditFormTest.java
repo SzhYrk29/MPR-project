@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class EditFormTest {
     private WebDriver driver;
 
@@ -15,12 +17,19 @@ public class EditFormTest {
 
     @Test
     public void testEditForm() {
-        EditFormPage page = new EditFormPage(driver);
+        EditFormPage editFormPage = new EditFormPage(driver);
 
-        page.open()
-                .fillInIdInput("5")
-                .fillInBrandInput("Ford")
-                .fillInColorInput("Green")
-                .clickSubmitButton();
+        String testId = "5";
+        String testBrand = "Ford";
+        String testColor = "Green";
+
+        editFormPage.open()
+                .fillInIdInput(testId)
+                .fillInBrandInput(testBrand)
+                .fillInColorInput(testColor);
+
+        ViewAllPage viewAllPage = editFormPage.clickSubmitButton();
+
+        assertTrue(viewAllPage.isCarWithBrandAndColorInTable(testBrand, testColor));
     }
 }

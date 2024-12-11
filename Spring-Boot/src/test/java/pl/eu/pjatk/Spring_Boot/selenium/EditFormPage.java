@@ -45,8 +45,8 @@ public class EditFormPage {
         return this;
     }
 
-    public EditFormPage clickSubmitButton() {
+    public ViewAllPage clickSubmitButton() {
         this.submitButton.click();
-        return this;
+        return new ViewAllPage(this.driver);
     }
 }

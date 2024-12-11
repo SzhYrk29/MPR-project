@@ -5,32 +5,32 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class DeleteFormPage {
+public class SearchBrandPage {
     private final WebDriver driver;
 
-    @FindBy(id="id")
-    private WebElement idInput;
+    @FindBy(id="brand")
+    private WebElement brandInput;
 
     @FindBy(id="submit")
     private WebElement submitButton;
 
-    public DeleteFormPage(WebDriver driver) {
+    public SearchBrandPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
-    public DeleteFormPage open() {
-        this.driver.get("http://localhost:8080/deleteForm");
+    public SearchBrandPage open() {
+        this.driver.get("http://localhost:8080/search/brand");
         return this;
     }
 
-    public DeleteFormPage fillInIdInput(String text) {
-        this.idInput.sendKeys(text);
+    public SearchBrandPage fillInBrandInput(String text) {
+        this.brandInput.sendKeys(text);
         return this;
     }
 
-    public ViewAllPage clickSubmitButton() {
+    public DisplayCarsByBrandPage clickSubmitButton() {
         this.submitButton.click();
-        return new ViewAllPage(this.driver);
+        return new DisplayCarsByBrandPage(this.driver);
     }
 }

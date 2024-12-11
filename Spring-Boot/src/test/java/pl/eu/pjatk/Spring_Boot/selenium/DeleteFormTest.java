@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 public class DeleteFormTest {
     private WebDriver driver;
 
@@ -15,10 +17,15 @@ public class DeleteFormTest {
 
     @Test
     public void testDeleteForm() {
-        DeleteFormPage page = new DeleteFormPage(driver);
+        DeleteFormPage deleteFormPage = new DeleteFormPage(driver);
 
-        page.open()
-                .fillInIdInput("6")
-                .clickSubmitButton();
+        String tesId = "5";
+
+        deleteFormPage.open()
+                .fillInIdInput(tesId);
+
+        ViewAllPage viewAllPage = deleteFormPage.clickSubmitButton();
+
+        assertFalse(viewAllPage.isCanWithIdInTable(tesId));
     }
 }

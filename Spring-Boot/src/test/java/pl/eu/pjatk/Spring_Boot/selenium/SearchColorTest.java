@@ -1,5 +1,6 @@
 package pl.eu.pjatk.Spring_Boot.selenium;
 
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
@@ -7,7 +8,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AddFormTest {
+public class SearchColorTest {
     private WebDriver driver;
 
     @BeforeEach
@@ -16,18 +17,16 @@ public class AddFormTest {
     }
 
     @Test
-    public void testAddForm() {
-        AddFormPage addFormPage = new AddFormPage(driver);
+    public void testSearchColor() {
+        SearchColorPage searchColorPage = new SearchColorPage(driver);
 
-        String testBrand = "Tesla";
         String testColor = "Black";
 
-        addFormPage.open()
-                .fillInBrandInput(testBrand)
+        searchColorPage.open()
                 .fillInColorInput(testColor);
 
-        ViewAllPage viewAllPage = addFormPage.clickSubmitButton();
+        DisplayCarsByColorPage displayCarsByColorPage = searchColorPage.clickSubmitButton();
 
-        assertTrue(viewAllPage.isCarWithBrandAndColorInTable(testBrand, testColor));
+        assertTrue(displayCarsByColorPage.isCarWithColorInTable(testColor));
     }
 }

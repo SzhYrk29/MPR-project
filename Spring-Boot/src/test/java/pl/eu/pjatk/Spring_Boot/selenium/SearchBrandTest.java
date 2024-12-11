@@ -7,7 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AddFormTest {
+public class SearchBrandTest {
     private WebDriver driver;
 
     @BeforeEach
@@ -16,18 +16,16 @@ public class AddFormTest {
     }
 
     @Test
-    public void testAddForm() {
-        AddFormPage addFormPage = new AddFormPage(driver);
+    public void testSearchBrand() {
+        SearchBrandPage searchBrandPage = new SearchBrandPage(driver);
 
         String testBrand = "Tesla";
-        String testColor = "Black";
 
-        addFormPage.open()
-                .fillInBrandInput(testBrand)
-                .fillInColorInput(testColor);
+        searchBrandPage.open()
+                .fillInBrandInput(testBrand);
 
-        ViewAllPage viewAllPage = addFormPage.clickSubmitButton();
+        DisplayCarsByBrandPage displayCarsByBrandPage = searchBrandPage.clickSubmitButton();
 
-        assertTrue(viewAllPage.isCarWithBrandAndColorInTable(testBrand, testColor));
+        assertTrue(displayCarsByBrandPage.isCarWithBrandInTable(testBrand));
     }
 }
