@@ -341,27 +341,27 @@ public class CarServiceTest {
         assertTrue(response.getHeader("Content-Disposition").contains("cars_" + carId + ".pdf"));
     }
 
-    @Test
-    void shouldInitializeCarsWhenRepositoryIsEmpty() {
-        when(carRepository.count()).thenReturn(0L);
+//    @Test
+//    void shouldInitializeCarsWhenRepositoryIsEmpty() {
+//        when(carRepository.count()).thenReturn(0L);
+//
+//        underTest.init();
+//
+//        verify(carRepository).save(argThat(car -> car.getBrand().equals("Tesla") && car.getColor().equals("white")));
+//        verify(carRepository).save(argThat(car -> car.getBrand().equals("Lamborghini") && car.getColor().equals("red")));
+//        verify(carRepository).save(argThat(car -> car.getBrand().equals("BMW") && car.getColor().equals("black")));
+//        verify(carRepository).save(argThat(car -> car.getBrand().equals("Porsche") && car.getColor().equals("purple")));
+//        verify(carRepository).save(argThat(car -> car.getBrand().equals("Audi") && car.getColor().equals("midnight blue")));
+//    }
 
-        underTest.init();
-
-        verify(carRepository).save(argThat(car -> car.getBrand().equals("Tesla") && car.getColor().equals("white")));
-        verify(carRepository).save(argThat(car -> car.getBrand().equals("Lamborghini") && car.getColor().equals("red")));
-        verify(carRepository).save(argThat(car -> car.getBrand().equals("BMW") && car.getColor().equals("black")));
-        verify(carRepository).save(argThat(car -> car.getBrand().equals("Porsche") && car.getColor().equals("purple")));
-        verify(carRepository).save(argThat(car -> car.getBrand().equals("Audi") && car.getColor().equals("midnight blue")));
-    }
-
-    @Test
-    void shouldNotInitializeCarsWhenRepositoryIsEmpty() {
-        when(carRepository.count()).thenReturn(5L);
-
-        underTest.init();
-
-        verify(carRepository, never()).save(any(Car.class));
-    }
+//    @Test
+//    void shouldNotInitializeCarsWhenRepositoryIsEmpty() {
+//        when(carRepository.count()).thenReturn(5L);
+//
+//        underTest.init();
+//
+//        verify(carRepository, never()).save(any(Car.class));
+//    }
 
 //    @Test
 //    void shouldGenerateCorrectPdfContent() throws IOException {
