@@ -31,16 +31,16 @@ public class CarService {
         this.stringUtilsService = stringUtilsService;
     }
 
-    @PostConstruct
-    public void init() {
-        if (this.repository.count() == 0) {
-            this.repository.save(new Car("Tesla", "white"));
-            this.repository.save(new Car("Lamborghini", "red"));
-            this.repository.save(new Car("BMW", "black"));
-            this.repository.save(new Car("Porsche", "purple"));
-            this.repository.save(new Car("Audi", "midnight blue"));
-        }
-    }
+//    @PostConstruct
+//    public void init() {
+//        if (this.repository.count() == 0) {
+//            this.repository.save(new Car("Tesla", "white"));
+//            this.repository.save(new Car("Lamborghini", "red"));
+//            this.repository.save(new Car("BMW", "black"));
+//            this.repository.save(new Car("Porsche", "purple"));
+//            this.repository.save(new Car("Audi", "midnight blue"));
+//        }
+//    }
 
     public List<Car> getCarByBrand (String brand) {
         List<Car> cars = this.repository.findByBrand(brand);
