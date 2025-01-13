@@ -134,27 +134,25 @@ public class CarServiceTest {
         assertEquals(expectedCars.getFirst().getColor(), actualCars.getFirst().getColor());
     }
 
-//    @Test
-//    public void shouldAddCar() {
-//        Car carToAdd = new Car(1L, "BMW", "Black", 12345);
-//
-//        String responseBody = """
-//                {
-//                    "id": 1, "brand": "BMW", "color": "Black", "identifier": 12345
-//                }
-//                """;
-//
-//        customizer.getServer()
-//                .expect(MockRestRequestMatchers
-//                        .requestTo("car"))
-//                .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
-//                .andExpect(MockRestRequestMatchers.content().json("{\"brand\":\"BMW\",\"color\":\"Black\",\"identifier\":12345}"))
-//                .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
-//
-//        service.addCar(carToAdd);
-//
-//        Car exprectedCar = new Car(1L, "BMW", "Black", 12345);
-//
-//        assertEquals(carToAdd, service.getCarById(exprectedCar.getId()));
-//    }
+    @Test
+    public void shouldAddCar() {
+        Car carToAdd = new Car(1L, "BMW", "Black", 12345);
+
+        String responseBody = """
+                {
+                    "id": 1, "brand": "BMW", "color": "Black", "identifier": 12345
+                }
+                """;
+
+        customizer.getServer()
+                .expect(MockRestRequestMatchers
+                        .requestTo("car"))
+                .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        service.addCar(carToAdd);
+
+        Car exprectedCar = service.getCarById(1L);
+
+        assertEquals(carToAdd, service.getCarById(exprectedCar.getId()));
+    }
 }
