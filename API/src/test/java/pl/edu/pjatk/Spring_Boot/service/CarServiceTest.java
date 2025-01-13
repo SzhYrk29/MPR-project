@@ -166,7 +166,7 @@ public class CarServiceTest {
         Mockito.when(stringUtilsService.toLowerCaseExceptFirstLetter("TOYOTA")).thenReturn("Toyota");
         Mockito.when(stringUtilsService.toLowerCaseExceptFirstLetter("BLUE")).thenReturn("Blue");
 
-        Car result = underTest.getCar(carId);
+        Car result = underTest.getCarById(carId);
 
         assertThat(result).isNotNull();
         assertThat(result.getBrand()).isEqualTo("Toyota");
@@ -178,14 +178,14 @@ public class CarServiceTest {
     void shouldThrowCarNotFoundExceptionBecauseCarWithSuchIdDoesNotExistWhileTryingToGetACar() {
         Long carId = 1L;
         Mockito.when(carRepository.findById(carId)).thenReturn(Optional.empty());
-        assertThrows(CarNotFoundException.class, () -> underTest.getCar(carId));
+        assertThrows(CarNotFoundException.class, () -> underTest.getCarById(carId));
     }
 
     @Test
     void shouldThrowInvalidInputExceptionForNegativeOrZeroIdWhileTryingToGetACar() {
         Long carId = -1L;
         Mockito.when(carRepository.findById(carId)).thenReturn(Optional.empty());
-        assertThrows(InvalidInputException.class, () -> underTest.getCar(carId));
+        assertThrows(InvalidInputException.class, () -> underTest.getCarById(carId));
     }
 
     @Test
