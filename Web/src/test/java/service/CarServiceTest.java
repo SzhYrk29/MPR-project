@@ -136,23 +136,124 @@ public class CarServiceTest {
 
     @Test
     public void shouldAddCar() {
-        Car carToAdd = new Car(1L, "BMW", "Black", 12345);
+        Car carToAdd = new Car("Tesla", "White");
+
+        String requestBody = """
+                {
+                    "brand": "Tesla", "color": "White"
+                }
+                """;
 
         String responseBody = """
                 {
-                    "id": 1, "brand": "BMW", "color": "Black", "identifier": 12345
+                    "id": 1, "brand": "Tesla", "color": "White", "identifier": 12345
                 }
                 """;
 
         customizer.getServer()
                 .expect(MockRestRequestMatchers
                         .requestTo("car"))
+                .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+                .andExpect(MockRestRequestMatchers.content().json(requestBody))
+                .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        customizer.getServer()
+                .expect(MockRestRequestMatchers
+                        .requestTo("car/1"))
                 .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
         service.addCar(carToAdd);
 
-        Car exprectedCar = service.getCarById(1L);
+        Car addedCar = service.getCarById(1L);
 
-        assertEquals(carToAdd, service.getCarById(exprectedCar.getId()));
+        Car expectedCar = new Car(1L, "Tesla", "White", 12345);
+
+        assertEquals(expectedCar.getId(), addedCar.getId());
+        assertEquals(expectedCar.getBrand(), addedCar.getBrand());
+        assertEquals(expectedCar.getColor(), addedCar.getColor());
+        assertEquals(expectedCar.getIdentifier(), addedCar.getIdentifier());
     }
+
+    @Test
+    public void shouldUpdateCar() {
+        Car updatedCar = new Car(1L, "Tesla", "White", 12345);
+
+        String requestBody = """
+                {
+                    "brand": "Tesla", "color": "White"
+                }
+                """;
+
+        String responseBody = """
+                {
+                    "id": 1, "brand": "Tesla", "color": "White", "identifier": 12345
+                }
+                """;
+
+        customizer.getServer()
+                .expect(MockRestRequestMatchers
+                        .requestTo("update/1"))
+                .andExpect(MockRestRequestMatchers.method(HttpMethod.PUT))
+                .andExpect(MockRestRequestMatchers.content().json(requestBody))
+                .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        customizer.getServer()
+                .expect(MockRestRequestMatchers
+                        .requestTo("car/1"))
+                .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        service.updateCar(updatedCar.getId(), updatedCar);
+
+        Car addedCar = service.getCarById(1L);
+
+        Car expectedCar = new Car(1L, "Tesla", "White", 12345);
+
+        assertEquals(expectedCar.getId(), addedCar.getId());
+        assertEquals(expectedCar.getBrand(), addedCar.getBrand());
+        assertEquals(expectedCar.getColor(), addedCar.getColor());
+        assertEquals(expectedCar.getIdentifier(), addedCar.getIdentifier());
+    }
+
+    @Test
+    public void shouldDeleteCar() {
+        String allCarsResponseBefore = """
+        [
+            {"id": 1, "brand": "BMW", "color": "Black", "identifier": 12345},
+            {"id": 2, "brand": "Tesla", "color": "Black", "identifier": 67890}
+        ]
+        """;
+
+        String allCarsResponseAfter = """
+        [
+            {"id": 2, "brand": "Tesla", "color": "Black", "identifier": 67890}
+        ]
+        """;
+
+        customizer.getServer()
+                .expect(MockRestRequestMatchers
+                        .requestTo("car/all"))
+                .andRespond(MockRestResponseCreators.withSuccess(allCarsResponseBefore, MediaType.APPLICATION_JSON));
+
+        customizer.getServer()
+                .expect(MockRestRequestMatchers
+                        .requestTo("delete/1"))
+                .andExpect(MockRestRequestMatchers.method(HttpMethod.DELETE))
+                .andRespond(MockRestResponseCreators.withSuccess());
+
+        customizer.getServer()
+                .expect(MockRestRequestMatchers
+                        .requestTo("car/all"))
+                .andRespond(MockRestResponseCreators.withSuccess(allCarsResponseAfter, MediaType.APPLICATION_JSON));
+
+        List<Car> initialCars = service.getCars();
+        assertEquals(2, initialCars.size());
+
+        service.deleteCar(1L);
+
+        List<Car> updatedCars = service.getCars();
+        assertEquals(1, updatedCars.size());
+        assertEquals("Tesla", updatedCars.getFirst().getBrand());
+        assertEquals(2L, updatedCars.getFirst().getId());
+    }
+
 }
