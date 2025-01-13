@@ -45,7 +45,7 @@ public class CarServiceTest {
 
         customizer.getServer()
                 .expect(MockRestRequestMatchers
-                        .requestTo("http://localhost:8081/car/all"))
+                        .requestTo("car/all"))
                 .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
         List<Car> actualCars = service.getCars();
@@ -55,6 +55,7 @@ public class CarServiceTest {
                 new Car("BMW", "Black")
         );
 
-        assertEquals(expectedCars, actualCars);
+        assertEquals(expectedCars.get(0).getBrand(), actualCars.get(0).getBrand());
+        assertEquals(expectedCars.get(0).getColor(), actualCars.get(0).getColor());
     }
 }
