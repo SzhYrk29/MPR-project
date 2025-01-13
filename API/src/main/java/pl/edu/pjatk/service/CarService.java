@@ -67,7 +67,7 @@ public class CarService {
         return getSortedCars(cars);
     }
 
-    public Car getCar(Long id) {
+    public Car getCarById(Long id) {
         Optional<Car> optionalCar = this.repository.findById(id);
 
         if (id <= 0)

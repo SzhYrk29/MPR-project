@@ -36,7 +36,7 @@ public class MyRestController {
         try {
             Long parsedId = Long.parseLong(id);
             logger.info("Endpoint \"get by id\" was invoked using GET http method with id \"{}\".", id);
-            return new ResponseEntity<>(this.carService.getCar(parsedId), HttpStatus.OK);
+            return new ResponseEntity<>(this.carService.getCarById(parsedId), HttpStatus.OK);
         } catch (NumberFormatException e) {
             throw new InvalidInputException();
         }
