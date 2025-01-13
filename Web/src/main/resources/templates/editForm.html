@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit existing car</title>
+</head>
+<body>
+
+<h1>Edit existing car</h1>
+<p>Here you can edit car's info by providing car's ID</p>
+
+<form action="#" th:action="@{/editForm}" th:field="${car}" method="post">
+  <table>
+    <tr>
+      <td><input type="text" placeholder="ID" th:field="${car.id}"/></td>
+    </tr>
+    <tr>
+      <td><input type="text" placeholder="Brand" th:field="${car.brand}"/></td>
+    </tr>
+    <tr>
+      <td><input type="text" placeholder="Color" th:field="${car.color}"/></td>
+    </tr>
+    <tr>
+      <td><input id="submit" type="submit" value="Submit"/></td>
+    </tr>
+  </table>
+</form>
+
+</body>
+</html>

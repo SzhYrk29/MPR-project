@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete existing car</title>
+</head>
+<body>
+
+<h1>Delete existing car</h1>
+<p>Here you can delete car from database by providing car's ID</p>
+
+<form action="#" th:action="@{/deleteForm}" th:field="${car}" method="post">
+  <table>
+    <tr>
+      <td><input type="text" placeholder="ID" th:field="${car.id}"/></td>
+    </tr>
+    <tr>
+      <td><input id="submit" type="submit" value="Submit"/></td>
+    </tr>
+  </table>
+</form>
+
+</body>
+</html>
