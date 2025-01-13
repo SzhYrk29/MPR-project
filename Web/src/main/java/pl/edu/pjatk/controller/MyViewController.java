@@ -41,7 +41,7 @@ public class MyViewController {
 
     @PostMapping("displayCar")
     public String displayCar(@RequestParam Long id, Model model) {
-        Car car = carService.getCar(id);
+        Car car = carService.getCarById(id);
         model.addAttribute("car", car);
         logger.info("Page \"search car\" was submitted with id \"{}\".", id);
         return "displayCar";

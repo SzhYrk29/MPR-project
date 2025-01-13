@@ -49,7 +49,7 @@ public class CarService {
                 .body(new ParameterizedTypeReference<>() {});
     }
 
-    public Car getCar(Long id) {
+    public Car getCarById(Long id) {
         if (id <= 0) {
             throw new InvalidInputException();
         }
