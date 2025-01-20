@@ -26,20 +26,20 @@ public class MyViewController {
 
     private static final Logger logger = LoggerFactory.getLogger(MyViewController.class);
 
-    @GetMapping("view/all")
+    @GetMapping("view/all") // <- tested
     public String viewAllCars(Model model) {
         List<Car> carList = (List<Car>) carService.getCars();
         model.addAttribute("carList", carList);
         return "viewAll";
     }
 
-    @GetMapping("searchCar")
+    @GetMapping("searchCar") // <- tested
     public String searchForCar(Model model) {
         model.addAttribute("car", new Car());
         return "searchCar";
     }
 
-    @PostMapping("displayCar")
+    @PostMapping("displayCar") // <- tested
     public String displayCar(@RequestParam Long id, Model model) {
         Car car = carService.getCarById(id);
         model.addAttribute("car", car);
@@ -47,39 +47,39 @@ public class MyViewController {
         return "displayCar";
     }
 
-    @GetMapping("addForm")
+    @GetMapping("addForm") // <- tested
     public String displayAddForm(Model model) {
         model.addAttribute("car", new Car());
         return "addForm";
     }
 
-    @PostMapping("addForm")
+    @PostMapping("addForm") // <- tested
     public String submitAddForm(@ModelAttribute Car car) {
         this.carService.addCar(car);
         logger.info("Page \"add form\" was submitted with data: brand=\"{}\", color=\"{}\".", car.getBrand(), car.getColor());
         return "redirect:/view/all";
     }
 
-    @GetMapping("editForm")
+    @GetMapping("editForm") // <- tested
     public String displayEditForm(Model model) {
         model.addAttribute("car", new Car());
         return "editForm";
     }
 
-    @PostMapping("editForm")
+    @PostMapping("editForm") // <- tested
     public String submitEditForm(@ModelAttribute Car car) {
         this.carService.updateCar(car.getId(), car);
         logger.info("Page \"edit form\" was submitted with data: brand=\"{}\", color=\"{}\".", car.getBrand(), car.getColor());
         return "redirect:/view/all";
     }
 
-    @GetMapping("deleteForm")
+    @GetMapping("deleteForm") // <- tested
     public String displayDeleteForm(Model model) {
         model.addAttribute("car", new Car());
         return "deleteForm";
     }
 
-    @PostMapping("deleteForm")
+    @PostMapping("deleteForm") // <- tested
     public String submitDeleteForm(@ModelAttribute Car car) {
         this.carService.deleteCar(car.getId());
         logger.info("Page \"delete form\" was submitted with id \"{}\".", car.getId());

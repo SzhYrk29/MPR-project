@@ -1,4 +1,4 @@
-package pl.edu.pjatk.Spring_Boot.service.integrationTests;
+package pl.edu.pjatk.Spring_Boot.controller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 
 @Sql(scripts = {"/insert_cars.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class RestIntegrationTest {
+public class MyRestControllerTest {
 
     @LocalServerPort
     int port;
