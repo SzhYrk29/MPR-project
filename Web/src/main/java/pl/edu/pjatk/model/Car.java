@@ -21,6 +21,12 @@ public class Car {
         this.setIdentifier();
     }
 
+    public Car(Long id, String brand, String color) {
+        this.id = id;
+        this.brand = brand;
+        this.color = color;
+    }
+
     public void setIdentifier() {
         this.identifier = 0;
         String brandAndColor = this.brand + this.color;
