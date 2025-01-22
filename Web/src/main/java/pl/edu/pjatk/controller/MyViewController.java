@@ -86,7 +86,7 @@ public class MyViewController {
         return "redirect:/view/all";
     }
 
-    @GetMapping("search/brand")
+    @GetMapping("search/brand") // <- tested
     public String findByBrand(Model model) {
         List<Car> carList = new ArrayList<>();
         model.addAttribute("carList", carList);
