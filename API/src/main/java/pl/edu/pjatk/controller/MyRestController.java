@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 public class MyRestController {
-    private CarService carService;
+    private final CarService carService;
 
     @Autowired
     public MyRestController(CarService carService) {
@@ -33,7 +33,7 @@ public class MyRestController {
     @GetMapping("car/{id}") // <- endpoint (gets a car by id)
     public ResponseEntity<Car> getCarById(@PathVariable String id) {
         try {
-            Long parsedId = Long.parseLong(id);
+            long parsedId = Long.parseLong(id);
             if (parsedId <= 0)
                 throw new CarNotFoundException();
             logger.info("Endpoint \"getCarById by id\" was invoked using GET http method with id \"{}\".", id);
@@ -53,7 +53,7 @@ public class MyRestController {
     @DeleteMapping("delete/{id}") // <- endpoint (deletes a car)
     public ResponseEntity<Void> deleteCar(@PathVariable String id) {
         try {
-            Long parsedId = Long.parseLong(id);
+            long parsedId = Long.parseLong(id);
             if (parsedId <= 0)
                 throw new CarNotFoundException();
             this.carService.deleteCar(parsedId);
@@ -67,7 +67,7 @@ public class MyRestController {
     @PutMapping("update/{id}") // <- endpoint (updates car's info)
     public ResponseEntity<Void> updateCar(@PathVariable String id, @RequestBody Car car) {
         try {
-            Long parsedId = Long.parseLong(id);
+            long parsedId = Long.parseLong(id);
             if (parsedId <= 0)
                 throw new CarNotFoundException();
             this.carService.updateCar(parsedId, car);
@@ -90,17 +90,4 @@ public class MyRestController {
         logger.info("Endpoint \"getCarById by color\" was invoked using GET http method with color \"{}\".", color);
         return new ResponseEntity<>(this.carService.getCarByColor(color), HttpStatus.OK);
     }
-
-//    @GetMapping("pdf/{id}") // <- endpoint (gets pdf with info about car with given id)
-//    public ResponseEntity<Void> getPdf(@PathVariable String id, HttpServletResponse response) throws IOException {
-//        try {
-//            Long parsedId = Long.parseLong(id);
-//            this.carService.getPdf(parsedId, response);
-//            logger.info("Endpoint \"getCarById pdf\" was invoked using GET http method.");
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } catch (NumberFormatException e) {
-//            throw new InvalidInputException();
-//        }
-//
-//    }
 }

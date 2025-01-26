@@ -28,7 +28,7 @@ public class MyViewController {
 
     @GetMapping("view/all") // <- tested
     public String viewAllCars(Model model) {
-        List<Car> carList = (List<Car>) carService.getCars();
+        List<Car> carList = carService.getCars();
         model.addAttribute("carList", carList);
         return "viewAll";
     }
